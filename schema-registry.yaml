@@ -1,0 +1,69 @@
+registry:
+  version: "1.0.0"
+  lastUpdated: "2026-05-04"
+  description: "MIF (Microservices Integration Framework) - Central Schema Registry"
+  
+# Aggregated schema registry (references both services)
+services:
+  PaymentService:
+    ref: "payment-service/schema-registry.yaml"
+    features_count: 5 (2 implemented Week 1-2, 3 planned Week 3-4)
+    implemented:
+      - GetPayment
+      - QueryPayments
+    planned:
+      - CreatePayment (saga)
+      - ValidatePayment (worker)
+      - ReservePayment (worker)
+      - SettlePayment (worker)
+  
+  IdentityService:
+    ref: "identity-service/schema-registry.yaml"
+    features_count: 5 (2 implemented Week 1-2, 3 planned Week 3-4)
+    implemented:
+      - GetUser
+      - QueryUsers
+    planned:
+      - ProvisionUser (saga)
+      - CreateInKeycloak (worker, Polly retry)
+      - UpdateCache (worker)
+      - Notify (worker)
+
+infrastructure:
+  kubernetes:
+    clusters:
+      - name: "kind"
+        type: "local development"
+        namespaces:
+          - platform-dev (1 replica, 100m CPU)
+          - platform-staging (2 replicas, 250m CPU)
+          - platform-prod (5 replicas, 500m CPU)
+
+observability:
+  prometheus:
+    endpoints:
+      - "payment-service:9090/metrics"
+      - "identity-service:9090/metrics"
+    retention: 30d
+  
+  grafana:
+    dashboards:
+      - Saga Health
+      - DLQ Status
+      - Pod Resource Usage
+
+versions:
+  "1.0" (2026-05-01):
+    - Phase-1: Foundation (Shared models, contracts)
+  "1.0" (2026-05-02):
+    - Phase-2: Reader + Writer APIs
+  "1.0" (2026-05-03):
+    - Phase-3: Wolverine Saga + DLQ
+  "1.0" (2026-05-04):
+    - Phase-4: Kubernetes Deployment
+  "1.1" (2026-05-04):
+    - Phase-5 Week 1-2: VSA Internal Structure + GetPayment + QueryPayments
+  "1.1" (2026-05-XX):
+    - Phase-5 Week 3-4: Complex Features + Saga/DLQ
+  "1.1" (2026-05-XX):
+    - Phase-5 Week 5-6: New Features + Cleanup

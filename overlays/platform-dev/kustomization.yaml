@@ -5,6 +5,7 @@ namespace: platform-dev
 
 resources:
   - ../../base
+  - namespace.yaml
 
 patches:
   - target:

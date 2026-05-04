@@ -1,0 +1,46 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: mif-platform-alerts
+  labels:
+    app.kubernetes.io/part-of: mif-platform
+    prometheus: mif-platform
+spec:
+  groups:
+    - name: mif-platform.rules
+      rules:
+        - alert: PaymentServiceDown
+          expr: up{job="payment-service"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Payment Service is down"
+            description: "Payment Service has been down for more than 2 minutes."
+
+        - alert: IdentityServiceDown
+          expr: up{job="identity-service"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Identity Service is down"
+            description: "Identity Service has been down for more than 2 minutes."
+
+        - alert: HighErrorRate
+          expr: rate(http_server_requests_seconds_count{status=~"5.."}[5m]) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High HTTP 5xx error rate"
+            description: "Service {{ $labels.job }} has a 5xx error rate above 5%."
+
+        - alert: HighLatency
+          expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m])) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High P95 latency"
+            description: "Service {{ $labels.job }} has P95 latency above 1 second."

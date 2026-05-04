@@ -1,0 +1,11 @@
+# Compiled kustomize output
+kustomize-output/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

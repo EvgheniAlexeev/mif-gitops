@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: platform-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - ingress.yaml
+
+patches:
+  - path: payment-service-patch.yaml
+    target:
+      kind: Deployment
+      name: payment-service
+  - path: identity-service-patch.yaml
+    target:
+      kind: Deployment
+      name: identity-service
+  - path: mongodb-patch.yaml
+    target:
+      kind: Deployment
+      name: mongodb
+  - path: keycloak-patch.yaml
+    target:
+      kind: Deployment
+      name: keycloak
+  - path: rabbitmq-patch.yaml
+    target:
+      kind: Deployment
+      name: rabbitmq
+  - path: postgresql-patch.yaml
+    target:
+      kind: Deployment
+      name: postgresql
